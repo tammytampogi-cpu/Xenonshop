@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Xenon&#39;s Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan-primary: #06b6d4;
+        }
+
+        body {
+            background-color: #030303;
+            color: #e5e7eb;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+        }
+
+        h1, h2, h3, .font-space {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(6, 182, 212, 0.15);
+            box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05);
+        }
+        
+        .bg-grid-pattern {
+            background-image: linear-gradient(to right, rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+            background-size: 4rem 4rem;
+        }
+
+        .ambient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -2;
+            opacity: 0.3;
+            animation: breathe 15s infinite alternate ease-in-out;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        .orb-1 { width: 40vw; height: 40vw; top: -5vw; left: -10vw; background: rgba(6, 182, 212, 0.15); animation-delay: 0s; }
+        .orb-2 { width: 35vw; height: 35vw; bottom: -5vw; right: -5vw; background: rgba(8, 145, 178, 0.1); animation-delay: -5s; }
+
+        @keyframes breathe {
+            0% { transform: scale(0.8) translate(0, 0); opacity: 0.15; }
+            100% { transform: scale(1.2) translate(3%, 3%); opacity: 0.35; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        
+        .input-glow {
+            background: rgba(5, 5, 5, 0.8);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            transition: all 0.3s ease;
+            color: white;
+        }
+        .input-glow:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3), inset 0 0 10px rgba(6, 182, 212, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-cyan-500 selection:text-black">
+
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="fixed inset-0 bg-grid-pattern z-[-3] opacity-50 pointer-events-none"></div>
+
+    <div class="min-h-screen flex items-center justify-center p-4 relative z-10 animate-fade-in-up">
+        <div class="glass-panel p-8 md:p-12 rounded-3xl w-full max-w-md relative shadow-[0_20px_50px_rgba(0,0,0,0.9)] border-t border-cyan-500/50">
+            <div class="text-center mb-8">
+                <a href="index.html" class="inline-flex items-center justify-center w-16 h-16 mx-auto bg-cyan-950/40 rounded-2xl mb-6 shadow-[inset_0_0_20px_rgba(6,182,212,0.2)] border border-cyan-900/50 relative hover:scale-105 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </a>
+                <h1 class="text-3xl font-space font-black text-white tracking-widest drop-shadow-md uppercase">Login</h1>
+                <p class="text-cyan-600 text-[10px] md:text-xs mt-2 font-space tracking-[0.3em] uppercase font-bold">Welcome Back</p>
+            </div>
+            
+            
+
+            <form method="POST" action="login.html" class="flex flex-col gap-6">
+                <div>
+                    <label class="block text-[10px] uppercase tracking-[0.2em] text-cyan-500 mb-2 font-bold font-space">Username</label>
+                    <input type="text" name="username" required placeholder="Enter username" class="input-glow w-full px-4 py-3.5 rounded-xl font-mono text-sm placeholder-cyan-900/50">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase tracking-[0.2em] text-cyan-500 mb-2 font-bold font-space">Password</label>
+                    <input type="password" name="password" required placeholder="Enter password" class="input-glow w-full px-4 py-3.5 rounded-xl font-mono text-sm tracking-widest placeholder-cyan-900/50">
+                </div>
+                <button type="submit" class="mt-4 w-full bg-cyan-500 hover:bg-cyan-400 text-black font-space font-bold uppercase tracking-[0.2em] py-4 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transform hover:-translate-y-1">Login</button>
+            </form>
+            
+            <div class="mt-8 text-center border-t border-cyan-900/40 pt-6">
+                <p class="text-xs text-gray-500 font-mono tracking-wide">Don't have an account?</p>
+                <a href="register.html" class="inline-block mt-2 text-cyan-400 hover:text-cyan-300 font-space font-bold uppercase tracking-widest text-xs transition-colors">Register Here ↗</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

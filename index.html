@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xenon&#39;s Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan-primary: #06b6d4;
+        }
+
+        body {
+            background-color: #030303; 
+            color: #e5e7eb;
+            scroll-behavior: smooth;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+        }
+
+        h1, h2, h3, .font-space {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #22d3ee; }
+
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(6, 182, 212, 0.15);
+            box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05);
+        }
+        
+        .bg-grid-pattern {
+            background-image: linear-gradient(to right, rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+            background-size: 4rem 4rem;
+        }
+
+        .ambient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -2;
+            opacity: 0.3;
+            animation: breathe 15s infinite alternate ease-in-out;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        .orb-1 { width: 40vw; height: 40vw; top: -5vw; left: -10vw; background: rgba(6, 182, 212, 0.15); animation-delay: 0s; }
+        .orb-2 { width: 35vw; height: 35vw; bottom: -5vw; right: -5vw; background: rgba(8, 145, 178, 0.1); animation-delay: -5s; }
+
+        @keyframes breathe {
+            0% { transform: scale(0.8) translate(0, 0); opacity: 0.15; }
+            100% { transform: scale(1.2) translate(3%, 3%); opacity: 0.35; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .marquee-content {
+            display: flex;
+            width: max-content;
+            animation: marquee 90s linear infinite; 
+        }
+
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            will-change: transform, box-shadow;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9), 0 0 20px rgba(6,182,212,0.4);
+            border-color: rgba(6, 182, 212, 0.6);
+        }
+        
+        .search-glow { transition: all 0.3s ease; }
+        .search-glow:focus-within {
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.2);
+            border-color: rgba(6, 182, 212, 0.9);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-cyan-500 selection:text-black flex flex-col">
+
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="fixed inset-0 bg-grid-pattern z-[-3] opacity-50 pointer-events-none"></div>
+
+    <!-- Floating Top Navigation Header Pill -->
+    <div class="sticky top-4 z-40 w-full px-4 mb-4 pointer-events-none">
+        <nav class="pointer-events-auto glass-panel border border-cyan-500/30 bg-[#030303]/80 backdrop-blur-2xl px-4 md:px-8 py-3 md:py-4 flex items-center justify-between shadow-[0_15px_40px_rgba(0,0,0,0.9),0_0_30px_rgba(6,182,212,0.15)] rounded-full max-w-6xl mx-auto transition-all duration-300">
+            
+            <!-- Hamburger Button (Left) -->
+            <button onclick="toggleSidebar(); " class="w-10 h-10 flex items-center justify-start text-cyan-500 hover:text-cyan-300 transition-colors outline-none flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+
+            <!-- Center Title -->
+            <div class="font-space font-black text-sm sm:text-base md:text-2xl text-white tracking-widest uppercase flex items-center justify-center gap-2 drop-shadow-md truncate px-2 overflow-hidden w-full max-w-[50%] md:max-w-none">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-600 truncate w-full text-center">Xenon&#39;s Marketplace</span>
+            </div>
+
+            <!-- Right Elements (Coins & Users) -->
+            <div class="flex items-center justify-end w-20 md:w-32 flex-shrink-0 gap-2 md:gap-3">
+                
+            </div>
+        </nav>
+    </div>
+
+    <!-- Navigation Sidebar -->
+    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300"></div>
+    <aside id="userSidebar" class="fixed top-0 left-0 h-full w-[350px] max-w-[85vw] glass-panel border-r border-cyan-500/50 z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col bg-[#030303]/95 shadow-[20px_0_50px_rgba(0,0,0,0.9)]">
+        
+        <div class="p-6 border-b border-cyan-900/40 flex justify-between items-center bg-gradient-to-r from-cyan-950/20 to-transparent">
+            <h2 class="text-lg font-space font-black text-white uppercase tracking-widest flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-500"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Menu
+            </h2>
+            <button onclick="toggleSidebar()" class="text-cyan-500 hover:text-white transition-colors outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+
+        <div class="p-6 flex-grow flex flex-col gap-4 overflow-y-auto overflow-x-hidden">
+            
+                <div class="flex-grow flex flex-col justify-center gap-4">
+                    <p class="text-xs text-gray-400 font-mono leading-relaxed mb-4 text-center">Please login or register to manage your account and coins.</p>
+                    <a href="login.html" class="w-full bg-cyan-500 hover:bg-cyan-400 text-black py-4 rounded-xl text-xs font-bold font-space uppercase tracking-widest text-center transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:shadow-[0_0_25px_rgba(6,182,212,0.6)]">Login</a>
+                    <a href="register.html" class="w-full bg-transparent border-2 border-cyan-900 hover:border-cyan-500 text-cyan-500 hover:text-cyan-400 py-4 rounded-xl text-xs font-bold font-space uppercase tracking-widest text-center transition-all">Register</a>
+                </div>
+            
+        </div>
+        <div class="p-6 text-center border-t border-cyan-900/30">
+            <p class="text-[9px] font-space tracking-[0.2em] uppercase text-cyan-700 font-bold">SYSTEM SECURED</p>
+        </div>
+    </aside>
+
+    <!-- Infinite Product Photo Marquee (Static despite AJAX updates) -->
+    <div class="w-full relative overflow-hidden py-8 pt-10 border-b border-cyan-900/40 bg-[#0a0a0a]/50">
+        <div class="marquee-content gap-4 px-2">
+            
+                
+                    
+                    <img src="Photos/1f7f8217b4004d72a6e2b6f91704d918_1000000414.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/113f839d52214f188c7bad4635dd6594_1000000450.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/a65650b18ec84b92b4f723322afff9d2_1000000443.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/6db92c8198c64f0bab935fcbab282b8a_1000000453.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/685cbd60725d43e1a26eaebac24f5daf_1000000454.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/b06a4e264bfe4eb59d6f084dcc0a99c0_1000000455.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/cdc638e5fa3c4bdd82c420da4323d631_Screenshot_20260505_190920_MT_Manager.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/e994b6ae222248939820cdcca0eda569_Screenshot_20260505_195447_Termux.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/0818a642951e4b38b32cb1b92f172f39_prod_69c22227d300a.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/7bca170d63504153980cdd188d58d05d_prod_69c21a8f3f9b9.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/1dd7d85c7cd245668a1a85207c7788b9_prod_69c219034b05d.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/bb9afb6eac504c908416517bdc1a6a20_IMG_20260506_204204_438.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+            
+                
+                    
+                    <img src="Photos/1f7f8217b4004d72a6e2b6f91704d918_1000000414.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/113f839d52214f188c7bad4635dd6594_1000000450.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/a65650b18ec84b92b4f723322afff9d2_1000000443.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/6db92c8198c64f0bab935fcbab282b8a_1000000453.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/685cbd60725d43e1a26eaebac24f5daf_1000000454.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/b06a4e264bfe4eb59d6f084dcc0a99c0_1000000455.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/cdc638e5fa3c4bdd82c420da4323d631_Screenshot_20260505_190920_MT_Manager.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/e994b6ae222248939820cdcca0eda569_Screenshot_20260505_195447_Termux.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/0818a642951e4b38b32cb1b92f172f39_prod_69c22227d300a.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/7bca170d63504153980cdd188d58d05d_prod_69c21a8f3f9b9.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/1dd7d85c7cd245668a1a85207c7788b9_prod_69c219034b05d.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/bb9afb6eac504c908416517bdc1a6a20_IMG_20260506_204204_438.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+            
+                
+                    
+                    <img src="Photos/1f7f8217b4004d72a6e2b6f91704d918_1000000414.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/113f839d52214f188c7bad4635dd6594_1000000450.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/a65650b18ec84b92b4f723322afff9d2_1000000443.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/6db92c8198c64f0bab935fcbab282b8a_1000000453.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/685cbd60725d43e1a26eaebac24f5daf_1000000454.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/b06a4e264bfe4eb59d6f084dcc0a99c0_1000000455.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/cdc638e5fa3c4bdd82c420da4323d631_Screenshot_20260505_190920_MT_Manager.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/e994b6ae222248939820cdcca0eda569_Screenshot_20260505_195447_Termux.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/0818a642951e4b38b32cb1b92f172f39_prod_69c22227d300a.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/7bca170d63504153980cdd188d58d05d_prod_69c21a8f3f9b9.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/1dd7d85c7cd245668a1a85207c7788b9_prod_69c219034b05d.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/bb9afb6eac504c908416517bdc1a6a20_IMG_20260506_204204_438.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+            
+                
+                    
+                    <img src="Photos/1f7f8217b4004d72a6e2b6f91704d918_1000000414.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/113f839d52214f188c7bad4635dd6594_1000000450.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/a65650b18ec84b92b4f723322afff9d2_1000000443.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/6db92c8198c64f0bab935fcbab282b8a_1000000453.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/685cbd60725d43e1a26eaebac24f5daf_1000000454.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/b06a4e264bfe4eb59d6f084dcc0a99c0_1000000455.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/cdc638e5fa3c4bdd82c420da4323d631_Screenshot_20260505_190920_MT_Manager.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/e994b6ae222248939820cdcca0eda569_Screenshot_20260505_195447_Termux.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/0818a642951e4b38b32cb1b92f172f39_prod_69c22227d300a.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/7bca170d63504153980cdd188d58d05d_prod_69c21a8f3f9b9.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/1dd7d85c7cd245668a1a85207c7788b9_prod_69c219034b05d.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/bb9afb6eac504c908416517bdc1a6a20_IMG_20260506_204204_438.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+            
+                
+                    
+                    <img src="Photos/1f7f8217b4004d72a6e2b6f91704d918_1000000414.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/113f839d52214f188c7bad4635dd6594_1000000450.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/a65650b18ec84b92b4f723322afff9d2_1000000443.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/6db92c8198c64f0bab935fcbab282b8a_1000000453.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/685cbd60725d43e1a26eaebac24f5daf_1000000454.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/b06a4e264bfe4eb59d6f084dcc0a99c0_1000000455.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/cdc638e5fa3c4bdd82c420da4323d631_Screenshot_20260505_190920_MT_Manager.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/e994b6ae222248939820cdcca0eda569_Screenshot_20260505_195447_Termux.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/0818a642951e4b38b32cb1b92f172f39_prod_69c22227d300a.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/7bca170d63504153980cdd188d58d05d_prod_69c21a8f3f9b9.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/1dd7d85c7cd245668a1a85207c7788b9_prod_69c219034b05d.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/bb9afb6eac504c908416517bdc1a6a20_IMG_20260506_204204_438.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+            
+                
+                    
+                    <img src="Photos/1f7f8217b4004d72a6e2b6f91704d918_1000000414.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/113f839d52214f188c7bad4635dd6594_1000000450.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/a65650b18ec84b92b4f723322afff9d2_1000000443.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/6db92c8198c64f0bab935fcbab282b8a_1000000453.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/685cbd60725d43e1a26eaebac24f5daf_1000000454.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/b06a4e264bfe4eb59d6f084dcc0a99c0_1000000455.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/cdc638e5fa3c4bdd82c420da4323d631_Screenshot_20260505_190920_MT_Manager.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/e994b6ae222248939820cdcca0eda569_Screenshot_20260505_195447_Termux.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/0818a642951e4b38b32cb1b92f172f39_prod_69c22227d300a.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/7bca170d63504153980cdd188d58d05d_prod_69c21a8f3f9b9.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/1dd7d85c7cd245668a1a85207c7788b9_prod_69c219034b05d.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/bb9afb6eac504c908416517bdc1a6a20_IMG_20260506_204204_438.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+            
+                
+                    
+                    <img src="Photos/1f7f8217b4004d72a6e2b6f91704d918_1000000414.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/113f839d52214f188c7bad4635dd6594_1000000450.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/a65650b18ec84b92b4f723322afff9d2_1000000443.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/6db92c8198c64f0bab935fcbab282b8a_1000000453.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/685cbd60725d43e1a26eaebac24f5daf_1000000454.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/b06a4e264bfe4eb59d6f084dcc0a99c0_1000000455.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/cdc638e5fa3c4bdd82c420da4323d631_Screenshot_20260505_190920_MT_Manager.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/e994b6ae222248939820cdcca0eda569_Screenshot_20260505_195447_Termux.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/0818a642951e4b38b32cb1b92f172f39_prod_69c22227d300a.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/7bca170d63504153980cdd188d58d05d_prod_69c21a8f3f9b9.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/1dd7d85c7cd245668a1a85207c7788b9_prod_69c219034b05d.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/bb9afb6eac504c908416517bdc1a6a20_IMG_20260506_204204_438.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+            
+                
+                    
+                    <img src="Photos/1f7f8217b4004d72a6e2b6f91704d918_1000000414.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/113f839d52214f188c7bad4635dd6594_1000000450.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/a65650b18ec84b92b4f723322afff9d2_1000000443.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/6db92c8198c64f0bab935fcbab282b8a_1000000453.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/685cbd60725d43e1a26eaebac24f5daf_1000000454.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/b06a4e264bfe4eb59d6f084dcc0a99c0_1000000455.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/cdc638e5fa3c4bdd82c420da4323d631_Screenshot_20260505_190920_MT_Manager.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/e994b6ae222248939820cdcca0eda569_Screenshot_20260505_195447_Termux.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/0818a642951e4b38b32cb1b92f172f39_prod_69c22227d300a.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/7bca170d63504153980cdd188d58d05d_prod_69c21a8f3f9b9.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/1dd7d85c7cd245668a1a85207c7788b9_prod_69c219034b05d.png" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+                    
+                    <img src="Photos/bb9afb6eac504c908416517bdc1a6a20_IMG_20260506_204204_438.jpg" class="h-40 md:h-64 w-auto rounded-2xl border border-cyan-900/50 object-cover shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+                    
+                
+            
+            
+        </div>
+        <div class="absolute inset-y-0 left-0 w-16 md:w-48 bg-gradient-to-r from-[#030303] to-transparent z-10 pointer-events-none"></div>
+        <div class="absolute inset-y-0 right-0 w-16 md:w-48 bg-gradient-to-l from-[#030303] to-transparent z-10 pointer-events-none"></div>
+    </div>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-12 relative z-10">
+        
+        <!-- Live Instant Search Bar -->
+        <div class="max-w-xl mx-auto mb-10 animate-fade-in-up delay-100 relative search-glow rounded-full border border-cyan-900/50 bg-[#0a0a0a]/80 backdrop-blur-md">
+            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-500"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <input type="text" id="liveSearch" placeholder="Search products by name..." class="w-full bg-transparent text-white placeholder-gray-500 py-3 pl-12 pr-6 rounded-full focus:outline-none font-space tracking-wide">
+        </div>
+
+        <!-- AJAX Category Filters -->
+        <div class="relative w-full max-w-5xl mx-auto mb-10 animate-fade-in-up delay-200 group">
+            
+            <div id="leftScrollGradient" class="absolute left-0 top-0 bottom-2 w-20 bg-gradient-to-r from-[#030303] via-[#030303]/90 to-transparent z-20 flex items-center justify-start opacity-0 transition-opacity duration-300 pointer-events-none pl-1">
+                <button onclick="scrollCategories('left')" class="pointer-events-auto w-8 h-8 rounded-full bg-[#0a0a0a] border border-cyan-500/50 text-cyan-400 flex items-center justify-center hover:bg-cyan-500 hover:text-black transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+            </div>
+
+            <div id="categoryContainer" class="flex flex-nowrap overflow-x-auto scrollbar-hide gap-3 pb-2 scroll-smooth px-2">
+                <button onclick="loadCategory('all', this)" class="category-btn flex-shrink-0 px-6 py-2.5 rounded-full text-[11px] md:text-sm font-bold tracking-widest uppercase transition-all duration-300 backdrop-blur-md flex items-center gap-2 bg-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.4)] border-transparent outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="icon-color text-black transition-colors">
+                        <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span class="font-space whitespace-nowrap">All Products</span>
+                </button>
+                
+                
+                <button onclick="loadCategory('1b6cd8dd7c54497ba46337822a51fa07', this)" class="category-btn flex-shrink-0 px-6 py-2.5 rounded-full text-[11px] md:text-sm font-bold tracking-widest uppercase transition-all duration-300 backdrop-blur-md flex items-center gap-2.5 glass-panel text-gray-400 hover:text-cyan-300 hover:border-cyan-500/80 hover:bg-cyan-950/50 outline-none">
+                    
+                    <div class="w-5 h-5 rounded-full overflow-hidden border border-black/50 transition-colors">
+                        <img src="Photos/00b504197a184094a9be1fccc9e4a330_1000000414.png" alt="" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <span class="font-space whitespace-nowrap">ALL AVAILABLE CHEATS</span>
+                </button>
+                
+                <button onclick="loadCategory('e194e25a6b6249e3aa51bb03835231eb', this)" class="category-btn flex-shrink-0 px-6 py-2.5 rounded-full text-[11px] md:text-sm font-bold tracking-widest uppercase transition-all duration-300 backdrop-blur-md flex items-center gap-2.5 glass-panel text-gray-400 hover:text-cyan-300 hover:border-cyan-500/80 hover:bg-cyan-950/50 outline-none">
+                    
+                    <div class="w-5 h-5 rounded-full overflow-hidden border border-black/50 transition-colors">
+                        <img src="Photos/22856ec47bca4c5e9c7a9eb997413c2f_1000000442.png" alt="" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <span class="font-space whitespace-nowrap">CODM ACCOUNTS NOT CLEAN</span>
+                </button>
+                
+                <button onclick="loadCategory('dd642d5025914c3e9ba5785b30b46763', this)" class="category-btn flex-shrink-0 px-6 py-2.5 rounded-full text-[11px] md:text-sm font-bold tracking-widest uppercase transition-all duration-300 backdrop-blur-md flex items-center gap-2.5 glass-panel text-gray-400 hover:text-cyan-300 hover:border-cyan-500/80 hover:bg-cyan-950/50 outline-none">
+                    
+                    <div class="w-5 h-5 rounded-full overflow-hidden border border-black/50 transition-colors">
+                        <img src="Photos/9fed61a5bbb74e19b3c7cf355960385d_1000000412.jpg" alt="" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <span class="font-space whitespace-nowrap">BOTS FOR TELEGRAM</span>
+                </button>
+                
+                <button onclick="loadCategory('bbf41266aaed460aa3779d4b2059a618', this)" class="category-btn flex-shrink-0 px-6 py-2.5 rounded-full text-[11px] md:text-sm font-bold tracking-widest uppercase transition-all duration-300 backdrop-blur-md flex items-center gap-2.5 glass-panel text-gray-400 hover:text-cyan-300 hover:border-cyan-500/80 hover:bg-cyan-950/50 outline-none">
+                    
+                    <div class="w-5 h-5 rounded-full overflow-hidden border border-black/50 transition-colors">
+                        <img src="Photos/8ab771d7e4214e73b0a80db04478a89d_1000000442.png" alt="" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <span class="font-space whitespace-nowrap">ALL CODM TXT WITH NO AND WITH INFO </span>
+                </button>
+                
+                <button onclick="loadCategory('a95ac6aaa1054f13bb98af6248948e2f', this)" class="category-btn flex-shrink-0 px-6 py-2.5 rounded-full text-[11px] md:text-sm font-bold tracking-widest uppercase transition-all duration-300 backdrop-blur-md flex items-center gap-2.5 glass-panel text-gray-400 hover:text-cyan-300 hover:border-cyan-500/80 hover:bg-cyan-950/50 outline-none">
+                    
+                    <div class="w-5 h-5 rounded-full overflow-hidden border border-black/50 transition-colors">
+                        <img src="Photos/e328308ee37345f4bbd075e1749b2b4f_prod_69c22227d300a.png" alt="" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <span class="font-space whitespace-nowrap">ALL ML TXT WITH INFO &amp; NO INFO</span>
+                </button>
+                
+                <button onclick="loadCategory('ab0c7ca9d1b54a8aa68372aba997bb8d', this)" class="category-btn flex-shrink-0 px-6 py-2.5 rounded-full text-[11px] md:text-sm font-bold tracking-widest uppercase transition-all duration-300 backdrop-blur-md flex items-center gap-2.5 glass-panel text-gray-400 hover:text-cyan-300 hover:border-cyan-500/80 hover:bg-cyan-950/50 outline-none">
+                    
+                    <div class="w-5 h-5 rounded-full overflow-hidden border border-black/50 transition-colors">
+                        <img src="Photos/76d5d136756a4765bd1ec2a7d8045e6b_prod_69c21a8f3f9b9.jpg" alt="" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <span class="font-space whitespace-nowrap">ALL ROBLOX TXT WITH INFO &amp; NO INFO</span>
+                </button>
+                
+                <button onclick="loadCategory('13f94a13051242b9a8038bc46d99c535', this)" class="category-btn flex-shrink-0 px-6 py-2.5 rounded-full text-[11px] md:text-sm font-bold tracking-widest uppercase transition-all duration-300 backdrop-blur-md flex items-center gap-2.5 glass-panel text-gray-400 hover:text-cyan-300 hover:border-cyan-500/80 hover:bg-cyan-950/50 outline-none">
+                    
+                    <div class="w-5 h-5 rounded-full overflow-hidden border border-black/50 transition-colors">
+                        <img src="Photos/f763c037c8b745579ba483a9d831d500_prod_69c219034b05d.png" alt="" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <span class="font-space whitespace-nowrap">ALL BS TXT WITH INFO &amp; NO INFO</span>
+                </button>
+                
+            </div>
+
+            <div id="rightScrollGradient" class="absolute right-0 top-0 bottom-2 w-20 bg-gradient-to-l from-[#030303] via-[#030303]/90 to-transparent z-20 flex items-center justify-end opacity-0 transition-opacity duration-300 pointer-events-none pr-1">
+                <button onclick="scrollCategories('right')" class="pointer-events-auto w-8 h-8 rounded-full bg-[#0a0a0a] border border-cyan-500/50 text-cyan-400 flex items-center justify-center hover:bg-cyan-500 hover:text-black transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8 transition-opacity duration-300">
+            
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="all cheats games" style="animation-delay: 0ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/fa5bc0a000b04dc7919eb3b530f93b43'">
+                            
+                            <img src="Photos/1f7f8217b4004d72a6e2b6f91704d918_1000000414.png" alt="ALL CHEATS GAMES" class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/fa5bc0a000b04dc7919eb3b530f93b43'">
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">ALL AVAILABLE CHEATS</span>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="ALL CHEATS GAMES">ALL CHEATS GAMES</h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">100 - 1000</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/fa5bc0a000b04dc7919eb3b530f93b43" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="garena codm account not clean" style="animation-delay: 100ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/ab399db813d24ac48a078346ce0da68d'">
+                            
+                            <img src="Photos/113f839d52214f188c7bad4635dd6594_1000000450.jpg" alt="GARENA CODM ACCOUNT NOT CLEAN" class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/ab399db813d24ac48a078346ce0da68d'">
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">CODM ACCOUNTS NOT CLEAN</span>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="GARENA CODM ACCOUNT NOT CLEAN">GARENA CODM ACCOUNT NOT CLEAN</h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">50</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/ab399db813d24ac48a078346ce0da68d" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="garena codm account not clean" style="animation-delay: 200ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/b2cfe9e41a54469c8ac2159510a86c59'">
+                            
+                            <img src="Photos/a65650b18ec84b92b4f723322afff9d2_1000000443.jpg" alt="GARENA CODM ACCOUNT NOT CLEAN" class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/b2cfe9e41a54469c8ac2159510a86c59'">
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">CODM ACCOUNTS NOT CLEAN</span>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="GARENA CODM ACCOUNT NOT CLEAN">GARENA CODM ACCOUNT NOT CLEAN</h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">60</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/b2cfe9e41a54469c8ac2159510a86c59" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="bot generator " style="animation-delay: 300ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/430e3d6e316745b9a15156d0c130fe2e'">
+                            
+                            <img src="Photos/6db92c8198c64f0bab935fcbab282b8a_1000000453.jpg" alt="BOT GENERATOR " class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/430e3d6e316745b9a15156d0c130fe2e'">
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">BOTS FOR TELEGRAM</span>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="BOT GENERATOR ">BOT GENERATOR </h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">[&lt;•&gt; ᴘʀɪᴄᴇ ʟɪsᴛ &lt;•&gt;]  [ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ᴋᴇʏ ] 💸50₱ - 3 ᴅᴀʏ ᴀᴄᴄᴇss 💵100₱ - 7 ᴅᴀʏ ᴀᴄᴄᴇss 💵150₱ - 15 ᴅᴀʏ ᴀᴄᴄᴇss 💵200₱ - 30 ᴅᴀʏ ᴀᴄᴄᴇss  🤑RESELLER PANEL - 150₱ = 30 DAYS ACCESS  BOT @XenonPrimee TO SEE THE UI INTERFACE.</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/430e3d6e316745b9a15156d0c130fe2e" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="codm txt no info" style="animation-delay: 0ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/d6e8c95d299a4136bf6aefd96ebfafde'">
+                            
+                            <img src="Photos/685cbd60725d43e1a26eaebac24f5daf_1000000454.jpg" alt="CODM TXT NO INFO" class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/d6e8c95d299a4136bf6aefd96ebfafde'">
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">ALL CODM TXT WITH NO AND WITH INFO </span>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="CODM TXT NO INFO">CODM TXT NO INFO</h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">5, 000 Lines = 50</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/d6e8c95d299a4136bf6aefd96ebfafde" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="bot store codm txt with info " style="animation-delay: 100ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/959d2e9a917349f396a5b78b7fc87b66'">
+                            
+                            <img src="Photos/b06a4e264bfe4eb59d6f084dcc0a99c0_1000000455.jpg" alt="BOT STORE CODM TXT WITH INFO " class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/959d2e9a917349f396a5b78b7fc87b66'">
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">BOTS FOR TELEGRAM</span>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="BOT STORE CODM TXT WITH INFO ">BOT STORE CODM TXT WITH INFO </h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">╭━━━ 💰 PRICING ━━━╮ ┃ ➤ 1 Peso = 2 Accounts ┃ ➤ Minimum: 25 Pesos (50 Accounts) ╰━━━━━━━━━━━━━━━━━━━╯</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/959d2e9a917349f396a5b78b7fc87b66" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="txt with info files" style="animation-delay: 200ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/bb2f12631ff74b01a0b65026bf8762ea'">
+                            
+                            <img src="Photos/cdc638e5fa3c4bdd82c420da4323d631_Screenshot_20260505_190920_MT_Manager.jpg" alt="TXT WITH INFO FILES" class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/bb2f12631ff74b01a0b65026bf8762ea'">
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">ALL CODM TXT WITH NO AND WITH INFO </span>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="TXT WITH INFO FILES">TXT WITH INFO FILES</h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">100 = 1 files</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/bb2f12631ff74b01a0b65026bf8762ea" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="txt with info " style="animation-delay: 300ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/966ec9d0843b4ef9ad077df2f0f62530'">
+                            
+                            <img src="Photos/e994b6ae222248939820cdcca0eda569_Screenshot_20260505_195447_Termux.jpg" alt="TXT WITH INFO " class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/966ec9d0843b4ef9ad077df2f0f62530'">
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">ALL CODM TXT WITH NO AND WITH INFO </span>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="TXT WITH INFO ">TXT WITH INFO </h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">120 = GET ALL</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/966ec9d0843b4ef9ad077df2f0f62530" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="mobile legends txt with info" style="animation-delay: 0ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/f8316bb34f3548159e1242b535528a6b'">
+                            
+                            <img src="Photos/0818a642951e4b38b32cb1b92f172f39_prod_69c22227d300a.png" alt="MOBILE LEGENDS TXT WITH INFO" class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/f8316bb34f3548159e1242b535528a6b'">
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">ALL ML TXT WITH INFO &amp; NO INFO</span>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="MOBILE LEGENDS TXT WITH INFO">MOBILE LEGENDS TXT WITH INFO</h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">250</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/f8316bb34f3548159e1242b535528a6b" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="roblox txt with info" style="animation-delay: 100ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/9140f92a7a7a4bdd86a486c549ad1ce5'">
+                            
+                            <img src="Photos/7bca170d63504153980cdd188d58d05d_prod_69c21a8f3f9b9.jpg" alt="ROBLOX TXT WITH INFO" class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/9140f92a7a7a4bdd86a486c549ad1ce5'">
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">ALL ROBLOX TXT WITH INFO &amp; NO INFO</span>
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="ROBLOX TXT WITH INFO">ROBLOX TXT WITH INFO</h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">200</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/9140f92a7a7a4bdd86a486c549ad1ce5" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="bloodstrike with info" style="animation-delay: 200ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/ae782339dcdd4be9aedfc9dda70ea93a'">
+                            
+                            <img src="Photos/1dd7d85c7cd245668a1a85207c7788b9_prod_69c219034b05d.png" alt="BLOODSTRIKE WITH INFO" class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/ae782339dcdd4be9aedfc9dda70ea93a'">
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">ALL BS TXT WITH INFO &amp; NO INFO</span>
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="BLOODSTRIKE WITH INFO">BLOODSTRIKE WITH INFO</h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">150</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/ae782339dcdd4be9aedfc9dda70ea93a" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card-container block h-full animate-fade-in-up" data-title="garena account not clean" style="animation-delay: 300ms;">
+                    <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+
+                        <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='/product/cc6978163d1a4d6f9a69487b30723a96'">
+                            
+                            <img src="Photos/bb9afb6eac504c908416517bdc1a6a20_IMG_20260506_204204_438.jpg" alt="GARENA ACCOUNT NOT CLEAN" class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">
+                            
+                            <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                            <div class="mb-2 cursor-pointer group" onclick="window.location.href='/product/cc6978163d1a4d6f9a69487b30723a96'">
+                                
+                                    
+                                
+                                    
+                                    <span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">CODM ACCOUNTS NOT CLEAN</span>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="GARENA ACCOUNT NOT CLEAN">GARENA ACCOUNT NOT CLEAN</h3>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="flex flex-col mb-2 md:mb-3">
+                                    <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                    <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">140</span>
+                                </div>
+                                <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                    <a href="https://Xenonmarketplace.axeldev.me/product/cc6978163d1a4d6f9a69487b30723a96" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="https://t.me/XenonPrimee" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                        <span>Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            
+        </div>
+        
+        <div id="noSearchResults" class="hidden col-span-2 md:col-span-3 lg:col-span-4 text-center py-20 glass-panel rounded-3xl border border-cyan-900/30 border-dashed relative overflow-hidden mt-8">
+            <h2 class="text-xl font-space font-bold text-gray-300 mb-2">No Matching Products</h2>
+            <p class="text-gray-500 text-sm">Try adjusting your search.</p>
+        </div>
+    </main>
+
+    <footer class="border-t border-cyan-950/50 bg-[#030303] text-center py-8 text-cyan-600/50 text-sm mt-auto relative z-10">
+        <p class="font-space tracking-widest uppercase text-[10px] md:text-xs">&copy; <script>document.write(new Date().getFullYear())</script> Xenon&#39;s Marketplace. SYSTEM SECURED.</p>
+    </footer>
+
+    <script>
+        // Sidebar Logic
+        function toggleSidebar() {
+            const sidebar = document.getElementById('userSidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+                setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('opacity-0');
+                setTimeout(() => backdrop.classList.add('hidden'), 300);
+                document.body.style.overflow = '';
+            }
+        }
+
+        // AJAX Category Filter Logic
+        function loadCategory(catId, btnElement) {
+            document.querySelectorAll('.category-btn').forEach(b => {
+                b.classList.remove('bg-cyan-500', 'text-black', 'shadow-[0_0_15px_rgba(6,182,212,0.4)]');
+                b.classList.add('glass-panel', 'text-gray-400');
+                const icon = b.querySelector('.icon-color');
+                if(icon) {
+                    icon.classList.remove('text-black');
+                    icon.classList.add('text-cyan-500');
+                }
+            });
+            btnElement.classList.remove('glass-panel', 'text-gray-400');
+            btnElement.classList.add('bg-cyan-500', 'text-black', 'shadow-[0_0_15px_rgba(6,182,212,0.4)]');
+            const icon = btnElement.querySelector('.icon-color');
+            if(icon) {
+                icon.classList.add('text-black');
+                icon.classList.remove('text-cyan-500');
+            }
+
+            const grid = document.getElementById('productGrid');
+            grid.classList.add('opacity-0');
+
+            fetch(`/api/products?category=${catId}`)
+            .then(res => res.json())
+            .then(data => {
+                setTimeout(() => {
+                    if (data.products.length === 0) {
+                        grid.innerHTML = `
+                            <div class="col-span-2 md:col-span-3 lg:col-span-4 text-center py-24 glass-panel rounded-3xl border border-cyan-900/30 border-dashed relative overflow-hidden w-full">
+                                <div class="relative z-10">
+                                    <h2 class="text-2xl font-space font-black text-gray-200 mb-2 tracking-wide">No Products Found</h2>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        grid.innerHTML = data.products.map((p, idx) => {
+                            const delay = (idx % 4) * 100;
+                            const catBadge = p.category_name ? `<span class="inline-block px-1.5 py-0.5 mb-1.5 text-[6px] sm:text-[7px] md:text-[9px] font-space font-bold uppercase tracking-widest text-black bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.4)] truncate max-w-full">${p.category_name}</span>` : '';
+                            
+                            const imageArea = p.photo_url 
+                                ? `<img src="https://Xenonmarketplace.axeldev.me/${p.photo_url}" class="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100 relative z-10">`
+                                : `<div class="w-full h-full flex flex-col items-center justify-center text-gray-700 bg-[#050505] relative overflow-hidden"><span class="font-space tracking-[0.2em] text-[6px] md:text-[10px] uppercase font-bold opacity-40 text-cyan-500 text-center">No Image</span></div>`;
+
+                            const contactLink = "https://t.me/XenonPrimee";
+
+                            return `
+                            <div class="product-card-container block h-full animate-fade-in-up" data-title="${p.name.toLowerCase()}" style="animation-delay: ${delay}ms;">
+                                <div class="product-card glass-panel rounded-2xl overflow-hidden h-full flex flex-col relative bg-[#0a0a0a]/90 cursor-default shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+                                    <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/0 transition-colors duration-500 rounded-tl-2xl z-20 pointer-events-none"></div>
+                                    <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/0 transition-colors duration-500 rounded-br-2xl z-20 pointer-events-none"></div>
+                                    
+                                    <div class="h-20 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden bg-[#030303] relative p-2 md:p-3 cursor-pointer group" onclick="window.location.href='${p.url}'">
+                                        ${imageArea}
+                                        <div class="absolute inset-0 bg-cyan-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                            <span class="bg-black/80 border border-cyan-500/50 text-cyan-400 font-space font-bold uppercase tracking-widest text-[8px] sm:text-[10px] px-3 py-1.5 md:px-4 md:py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.6)]">View</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-2.5 sm:p-3 md:p-4 flex-grow flex flex-col justify-between relative z-10 bg-gradient-to-t from-[#030303] via-[#0a0a0a] to-transparent border-t border-cyan-900/30">
+                                        <div class="mb-2 cursor-pointer group" onclick="window.location.href='${p.url}'">
+                                            ${catBadge}
+                                            <h3 class="text-[10px] sm:text-sm md:text-lg font-space font-bold text-gray-100 mb-1 group-hover:text-cyan-400 transition-colors drop-shadow-md line-clamp-2 leading-tight" title="${p.name}">${p.name}</h3>
+                                        </div>
+                                        <div class="mt-auto">
+                                            <div class="flex flex-col mb-2 md:mb-3">
+                                                <span class="text-[6px] sm:text-[7px] md:text-[8px] text-cyan-500/70 uppercase tracking-[0.2em] font-bold mb-0.5 font-space">Price</span>
+                                                <span class="text-xs sm:text-base md:text-xl font-black text-white transition-colors drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-space truncate">${p.price}</span>
+                                            </div>
+                                            <div class="flex flex-row items-stretch gap-1 sm:gap-1.5 md:gap-2 pt-2 md:pt-3 border-t border-cyan-900/30 relative z-50">
+                                                <a href="https://Xenonmarketplace.axeldev.me/${p.url}" class="flex-1 bg-cyan-950/40 hover:bg-cyan-500 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                    <span>View</span>
+                                                </a>
+                                                <a href="https://Xenonmarketplace.axeldev.me/${contactLink}" target="_blank" class="flex-1 bg-black hover:bg-cyan-400 border border-cyan-900/50 hover:border-cyan-400 text-gray-300 hover:text-black py-2 px-1 rounded-lg text-[8px] sm:text-[9px] md:text-[10px] font-bold font-space uppercase tracking-widest text-center transition-all duration-300 shadow-[0_5px_10px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center gap-1 pointer-events-auto group">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                                                    <span>Contact</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('');
+                    }
+                    grid.classList.remove('opacity-0');
+                    
+                    const searchInput = document.getElementById('liveSearch');
+                    if (searchInput && searchInput.value) {
+                        searchInput.dispatchEvent(new Event('input'));
+                    }
+                }, 300);
+            });
+        }
+
+        // Live Search, Search Scrolling
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('liveSearch');
+            
+            if(searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase().trim();
+                    const productContainers = document.querySelectorAll('.product-card-container');
+                    const noResultsState = document.getElementById('noSearchResults');
+                    let visibleCount = 0;
+                    
+                    productContainers.forEach(container => {
+                        const title = container.getAttribute('data-title');
+                        if (title.includes(query)) {
+                            container.style.display = 'block';
+                            visibleCount++;
+                        } else {
+                            container.style.display = 'none';
+                        }
+                    });
+                    
+                    if (visibleCount === 0 && productContainers.length > 0) {
+                        noResultsState.classList.remove('hidden');
+                    } else {
+                        noResultsState.classList.add('hidden');
+                    }
+                });
+            }
+
+            const catContainer = document.getElementById('categoryContainer');
+            const leftGrad = document.getElementById('leftScrollGradient');
+            const rightGrad = document.getElementById('rightScrollGradient');
+
+            function updateScrollArrows() {
+                if (!catContainer) return;
+                
+                if (catContainer.scrollWidth > catContainer.clientWidth) {
+                    if (catContainer.scrollLeft > 0) {
+                        leftGrad.classList.remove('opacity-0');
+                        leftGrad.classList.add('opacity-100');
+                    } else {
+                        leftGrad.classList.add('opacity-0');
+                        leftGrad.classList.remove('opacity-100');
+                    }
+
+                    if (catContainer.scrollLeft + catContainer.clientWidth >= catContainer.scrollWidth - 5) {
+                        rightGrad.classList.add('opacity-0');
+                        rightGrad.classList.remove('opacity-100');
+                    } else {
+                        rightGrad.classList.remove('opacity-0');
+                        rightGrad.classList.add('opacity-100');
+                    }
+                } else {
+                    leftGrad.classList.add('opacity-0');
+                    rightGrad.classList.add('opacity-0');
+                }
+            }
+
+            if(catContainer) {
+                catContainer.addEventListener('scroll', updateScrollArrows);
+                window.addEventListener('resize', updateScrollArrows);
+                setTimeout(updateScrollArrows, 150); 
+            }
+
+            window.scrollCategories = function(direction) {
+                if (!catContainer) return;
+                const scrollAmount = 250;
+                if (direction === 'left') {
+                    catContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                } else {
+                    catContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
+            };
+        });
+    </script>
+</body>
+</html>
